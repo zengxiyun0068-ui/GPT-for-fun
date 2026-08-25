@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gravity Garden</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#070914;color:#fff;font-family:system-ui,-apple-system,sans-serif}canvas{display:block;width:100%;height:100%;touch-action:none}#ui{position:fixed;top:16px;left:16px;z-index:2;pointer-events:none}h1{margin:0;font-size:20px;font-weight:700}p{margin:4px 0;opacity:.72;font-size:13px}.hint{margin-top:8px;opacity:.5}
+button{pointer-events:auto;border:0;border-radius:999px;padding:8px 12px;background:#fff;color:#111;font-weight:650;cursor:pointer;margin-top:8px}
+</style>
+</head>
+<body>
+<div id="ui"><h1>🪐 Gravity Garden</h1><p>Tap / drag to plant stars. Nearby stars attract each other.</p><p class="hint">Double-tap empty space to make a tiny sun.</p><button id="clear">reset the universe</button></div>
+<canvas id="c"></canvas>
+<script>
+const c=document.querySelector('#c'),x=c.getContext('2d');let d=devicePixelRatio||1, W,H,b=[];
+function resize(){W=innerWidth;H=innerHeight;c.width=W*d;c.height=H*d;x.setTransform(d,0,0,d,0,0)}addEventListener('resize',resize);resize();
+function star(px,py,m=1){b.push({x:px,y:py,vx:(Math.random()-.5)*.7,vy:(Math.random()-.5)*.7,m,r:2+Math.sqrt(m)*1.8,h:Math.random()*360,life:1})}
+function sun(px,py){b.push({x:px,y:py,vx:0,vy:0,m:45,r:12,h:45,life:1,sun:true})}
+function tick(){for(let a of b){if(a.sun)continue;for(let q of b){if(a===q)continue;let dx=q.x-a.x,dy=q.y-a.y,rr=dx*dx+dy*dy+120, f=q.m/rr*.018;a.vx+=dx*f;a.vy+=dy*f}a.x+=a.vx;a.y+=a.vy;a.vx*=.999;a.vy*=.999}b=b.filter(a=>a.x>-250&&a.x<W+250&&a.y>-250&&a.y<H+250)}
+function draw(){x.fillStyle='rgba(7,9,20,.18)';x.fillRect(0,0,W,H);for(let a of b){let g=x.createRadialGradient(a.x,a.y,0,a.x,a.y,a.r*5);g.addColorStop(0,`hsla(${a.h},100%,90%,.9)`);g.addColorStop(.18,`hsla(${a.h},100%,70%,.5)`);g.addColorStop(1,`hsla(${a.h},100%,50%,0)`);x.fillStyle=g;x.beginPath();x.arc(a.x,a.y,a.r*5,0,7);x.fill();x.fillStyle=`hsl(${a.h},90%,${a.sun?'72%':'85%'})`;x.beginPath();x.arc(a.x,a.y,a.r,0,7);x.fill()}requestAnimationFrame(draw)}
+setInterval(tick,16);draw();
+let last=0;
+c.addEventListener('pointerdown',e=>{let t=performance.now();if(t-last<280) sun(e.clientX,e.clientY);else star(e.clientX,e.clientY,1+Math.random()*3);last=t});
+c.addEventListener('pointermove',e=>{if(e.buttons)star(e.clientX,e.clientY,.3+Math.random()*1.2)});
+document.querySelector('#clear').onclick=()=>{b=[];x.fillStyle='#070914';x.fillRect(0,0,W,H)};
+</script>
+</body>
+</html>
