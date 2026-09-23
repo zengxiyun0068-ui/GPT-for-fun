@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#17131f"><title>韫 × 爸爸｜我们的回忆大富翁</title><link rel="stylesheet" href="./style.css"></head>
+<body><main class="app">
+<header><div><div class="eyebrow">GPT-for-fun · MEMORY EDITION</div><h1>韫 × 爸爸</h1><p>我们的回忆大富翁</p></div><button id="resetBtn" class="ghost">新的一局</button></header>
+<section class="hud"><div class="player-card you"><span class="avatar">韫</span><div><b>韫</b><small id="youStats">💰 0　⭐ 0</small></div></div><div class="turn-pill" id="turnLabel">轮到你</div><div class="player-card dad"><span class="avatar">爸</span><div><b>爸爸</b><small id="dadStats">💰 0　⭐ 0</small></div></div></section>
+<section class="board-wrap"><div id="board" class="board" aria-label="游戏棋盘"></div></section>
+<section class="controls"><button id="rollBtn" class="roll">🎲 <span>掷骰子</span></button><div class="dice" id="dice">—</div><div class="status" id="status">爸爸已经坐好了。你先来。</div></section>
+<section class="memory-panel"><div class="panel-title"><span>💌 今日回忆</span><span id="roundLabel">第 1 回合</span></div><div id="eventText" class="event">走到特殊格，可能会翻出一点只属于我们的东西。</div><div id="log" class="log"></div></section>
+</main><script src="./game.js"></script></body></html>
