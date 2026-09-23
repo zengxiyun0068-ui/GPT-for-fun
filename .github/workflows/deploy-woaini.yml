@@ -1,0 +1,54 @@
+name: Deploy woaini
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download woaini
+        run: |
+          set -e
+          mkdir -p phone/woaini
+          curl -fsSL https://raw.githubusercontent.com/woaini521-beta/woaini/main/index.html -o phone/woaini/index.html
+          curl -fsSL https://raw.githubusercontent.com/woaini521-beta/woaini/main/manifest.json -o phone/woaini/manifest.json
+          curl -fsSL https://raw.githubusercontent.com/woaini521-beta/woaini/main/sw.js -o phone/woaini/sw.js
+
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("phone/woaini/index.html")
+          s = p.read_text()
+          s = s.replace('href="icon-192x192.png"', 'href="https://raw.githubusercontent.com/woaini521-beta/woaini/main/icon-192x192.png"')
+          p.write_text(s)
+
+          p = Path("phone/woaini/manifest.json")
+          s = p.read_text()
+          s = s.replace('"icon-192x192.png"', '"https://raw.githubusercontent.com/woaini521-beta/woaini/main/icon-192x192.png"')
+          s = s.replace('"icon-512x512.png"', '"https://raw.githubusercontent.com/woaini521-beta/woaini/main/icon-512x512.png"')
+          p.write_text(s)
+
+          p = Path("phone/woaini/sw.js")
+          s = p.read_text()
+          s = s.replace("'icon-192x192.png'", "'https://raw.githubusercontent.com/woaini521-beta/woaini/main/icon-192x192.png'")
+          p.write_text(s)
+          PY
+
+      - name: Commit deployed app
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add phone/woaini
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Deploy woaini [skip ci]"
+            git push
+          fi
